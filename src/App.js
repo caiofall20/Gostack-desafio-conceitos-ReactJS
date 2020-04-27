@@ -1,28 +1,49 @@
-import React from "react";
-
+import React, {useState, useEffect} from "react";
+import api from './services/api';
 import "./styles.css";
 
 function App() {
+
+  const [project, setProject] = useState([]);
+
+  useEffect(() => {
+    loadApi()
+  }, []);
+
+
   async function handleAddRepository() {
-    // TODO
+    const response = await api.post(`repositories`, {
+      title: "Desafio React BootCamp RocketSeat",
+      techs: ["React", "ReactJS", "NodeJS"],
+      url: "https://github.com/Delfio/desafio-conceitos-reactjs"
+    })
+    setProject([...project, response.data]);
+  }
+
+  async function loadApi() {
+    const response = await api.get(`/repositories`);
+    setProject(response.data);
   }
 
   async function handleRemoveRepository(id) {
-    // TODO
+    // await api.delete(`/repositories/${id}`);
+    // handleAddRepository();
+    setProject([]);
   }
 
   return (
     <div>
       <ul data-testid="repository-list">
-        <li>
-          Repositório 1
+        {project.map((el, index) => (
+          <li key={el.id}>
+            {el.title}
 
-          <button onClick={() => handleRemoveRepository(1)}>
-            Remover
-          </button>
-        </li>
+          </li>
+        ))}
       </ul>
-
+      <button onClick={() => handleRemoveRepository()}>
+        Remover
+      </button>
       <button onClick={handleAddRepository}>Adicionar</button>
     </div>
   );
